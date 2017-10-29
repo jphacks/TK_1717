@@ -39,11 +39,12 @@
 ### 活用した技術
 #### API・データ
 - LIFULL HOME'S API
-- WEB RTC
+- WebRTC
 
 #### フレームワーク・ライブラリ・モジュール
 - Sinatra (Ruby)
 - Google Map
+- SimpleWebRTC: https://github.com/andyet/SimpleWebRTC
 
 ### 独自開発技術（Hack Dayで開発したもの）
 #### 2日間に開発した独自の機能・技術
