@@ -1,0 +1,136 @@
+html, body { margin: 0; height: 100%; }
+
+body {
+    background-image: url(./videoback.jpg);
+}
+
+#splash {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    background-color: #f56a6a;
+    font-family: 'Dosis', sans-serif;
+}
+
+.message {
+    height: 2em;
+    line-height: 2em;
+}
+
+span.time {
+    margin-left: 1em;
+    font-size: 0.5em;
+}
+
+#splash>div {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 3em;
+}
+
+#videos {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#pname {
+    color: #e2d9de;
+    height: 1em;
+    padding: 0.3em;
+    margin: 0;
+    background-color: rgba(55, 61, 73, 0.975);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#submit {
+    position: absolute;
+    width: 100%;
+    bottom: -1px;
+}
+
+#submit::after {
+    display: block;
+    content: "";
+    clear: both;
+}
+
+#message {
+    display: block;
+    float: left;
+    width: calc(100% - 80px);
+    margin: 0;
+    padding: 0;
+    padding-left: 0.5em;
+    border: 0;
+    border: solid 1px #ddd;
+    box-sizing: border-box;
+    height: 30px;
+}
+
+#sendMessage {
+    float: right;
+    border: none;
+    padding: 0;
+    margin: 0;
+    width: 80px;
+    text-align: center;
+    height: 1.5em;
+    display: block;
+    background: #ddd;
+    height: 30px;
+}
+
+#url {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: solid 1px black;
+    border-left: none;
+    border-right: none;
+}
+
+#videos::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.videoContainer {
+    /* display: inline-block; */
+    float: left;
+    margin-left: 7px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 1em;
+}
+.videoContainer video {
+    position: absolute;
+    width: 100%;
+}
+
+.volume_bar {
+    position: absolute;
+    width: 5px;
+    height: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: #12acef;
+}
+
+span.body {
+    display: inline-block;
+    background-color: white;
+    padding: 0 1em;
+    border-radius: 1em;
+}
+
+span.name {
+    display: inline-block;
+    height: 2em;
+    margin-left: 1em;
+}

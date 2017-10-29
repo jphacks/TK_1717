@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geolocation Marker Example Usage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDT4quJ40uYy-405Lbx3DYD6CQe3QsXB6s"></script>
+    <script src="../geolocation-marker.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  </head>
+  <body>
+    <div id='mapBox'></div>
+	<div id="dragStatus"></div>
+	<style>
+		html,body {margin: 0; height:100%; width: 100%;}
+		body{font-size:14px;font-family:calibri;margin: 0;}
+		#mapBox {height:100%; width: 100%;}
+		#dragStatus { padding-top: 10px;}
+    </style>
+	    <script>
+		    	//Dragable Marker In Google Map....
+		var map, infoWindow;
+		console.log('AdsaSSASsdaS');
+		markers = []
+
+		function removeAllMarkers(){
+			for (var i = 0; i < markers.length; i++) {
+        		markers[i].setMap(null);
+        	}
+        	markers = [];
+		}
+
+		function drawHouseMarkers(currentPos){
+			for (var page = 0; page < 1; page++){
+            	var requestStr = `https://jphacks.tk/homes/api/realestate_article/search?hits=100&page=${page}&geo_pt=${currentPos.lat()},${currentPos.lng()}&geo_rd=10&sort_by=$distance`
+            	console.log(requestStr)
+            	$.getJSON(requestStr, function(data) {
+             		data = data.row_set;
+            	  		for(var i = 0; i < data.length; i++) {
+            	  			currentHouse = data[i]
+                			var pos = new google.maps.LatLng(currentHouse.lat, currentHouse.lng);
+			                console.log(currentHouse.lat);
+
+            			    var mark = new google.maps.Marker({
+                  				position: pos,
+                  				map: map,
+                  				icon: 'https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle_blue.png'
+                			});
+                			var imgString = `<div>`;
+                			/*
+                			console.log(currentHouse.photos.length);
+                			for (var imgIndex = 0;  imgIndex < currentHouse.photos.length; imgIndex++){
+                				console.log(imgIndex);
+                				//imgString += `<img src="${currentHouse.photos[imgIndex].mobile_url}" style="width:100%"onclick="plusDivs(1)"&#10095;>`;
+                				console.log(imgIndex);
+                			}*/
+                			imgString += '</div>';
+							var contentString = `
+							<p>
+							<img src="${currentHouse.photos[0].mobile_url || null}"><br>
+							<b>Name<b>: ${currentHouse.realestate_article_name || 'N/A'}<br>
+							<b>Address<b>: ${currentHouse.full_address || 'N/A'}<br>
+							<b>Floor Plan<b>: ${currentHouse.floor_plan_text || 'N/A'}<br>
+							<b>Floor Number<b>: ${currentHouse.floor_number || 'N/A'}<br>
+							<b>Price<b>: ${currentHouse.month_money_room_text || 'N/A'}<br>
+							<b>Chat Link<b>: <a href=https://jphacks.tk/chat?pkey=${currentHouse.pkey}>JOIN CHAT!</a><br>
+
+							</p>
+
+							`;
+
+							//"realestate_article_type_name","floor_number","floor_plan_text","full_address","pkey", photos.mobile_url type_name,"month_money_room_text"
+					        var infowindow = new google.maps.InfoWindow();
+							google.maps.event.addListener(mark,'click', (function(mark,contentString,infowindow){ 
+						        return function() {
+						           infowindow.setContent(contentString);
+						           infowindow.open(map,mark);
+						           map.setCenter(mark.getPosition());
+						        };
+						    })(mark,contentString,infowindow)); 
+                			markers.push(mark);  
+              			}
+            	});}
+		};
+
+		map = new google.maps.Map(document.getElementById('mapBox'), {
+		  center: {lat: 35.714497, lng: 139.762076},
+		  zoom: 17,
+		            styles: [
+            {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+            {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+            {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+            {
+              featureType: 'administrative.locality',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#d59563'}]
+            },
+            {
+              featureType: 'poi',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#d59563'}]
+            },
+            {
+              featureType: 'poi.park',
+              elementType: 'geometry',
+              stylers: [{color: '#263c3f'}]
+            },
+            {
+              featureType: 'poi.park',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#6b9a76'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry',
+              stylers: [{color: '#38414e'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry.stroke',
+              stylers: [{color: '#212a37'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#9ca5b3'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'geometry',
+              stylers: [{color: '#746855'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'geometry.stroke',
+              stylers: [{color: '#1f2835'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#f3d19c'}]
+            },
+            {
+              featureType: 'transit',
+              elementType: 'geometry',
+              stylers: [{color: '#2f3948'}]
+            },
+            {
+              featureType: 'transit.station',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#d59563'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'geometry',
+              stylers: [{color: '#17263c'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#515c6d'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.stroke',
+              stylers: [{color: '#17263c'}]
+            }
+          ]
+		});
+		console.log('Here');
+
+		// Try HTML5 geolocation.
+		if (navigator.geolocation) {
+		  navigator.geolocation.getCurrentPosition(function(position) {
+		    var pos = {
+		      lat: position.coords.latitude,
+		      lng: position.coords.longitude
+		    };
+		    console.log(pos);
+
+		    map.setCenter(pos);
+		    var myMarker = new google.maps.Marker({
+			    position: new google.maps.LatLng(pos.lat, pos.lng),
+			    draggable: true,
+			    icon: "../cursor.png"
+			    //https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle_blue.png
+			});
+			drawHouseMarkers(map.getCenter());
+
+			google.maps.event.addListener(myMarker, 'dragend', function (evt) {
+			    document.getElementById('dragStatus').innerHTML = '<p> Current Lat: ' + evt.latLng.lat().toFixed(4) + ' Current Lng: ' + evt.latLng.lng().toFixed(4) + '</p>';
+			    var point = myMarker.getPosition();
+			     map.setCenter(point); // setCenter takes a LatLng object
+			     map.panTo(point);
+			     removeAllMarkers();
+			     drawHouseMarkers(point);
+			});
+
+			google.maps.event.addListener(myMarker, 'dragstart', function (evt) {
+			    //-------------
+			    //------------
+			});
+
+			     google.maps.event.addListener(map,'idle',function(){
+			      if(!this.get('dragging') && this.get('oldCenter') && this.get('oldCenter')!==this.getCenter()) {
+			        //do what you want to
+			          //myMarker.setPosition(this.getCenter());
+			      }
+			      if(!this.get('dragging')){
+			       //this.set('oldCenter',this.getCenter())
+			      }
+			    });
+
+			    google.maps.event.addListener(map,'dragstart',function(){
+			      this.set('dragging',true);   
+			      //removeAllMarkers();       
+			    });
+
+			    google.maps.event.addListener(map,'dragend',function(){
+			      this.set('dragging',false);
+			      google.maps.event.trigger(this,'idle',{});
+			      //removeAllMarkers();
+			      //drawHouseMarkers(this.getCenter());
+			    });
+
+
+
+			map.setCenter(myMarker.position);
+			myMarker.setMap(map);
+		  }, function() {
+		    console.log('Error');
+		  });
+		} else {
+		  // Browser doesn't support Geolocation
+		  console.log('Error');
+		}
+
+    </script>
+  </body>
+</html>
