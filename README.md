@@ -56,6 +56,10 @@
 - Google Map
 - SimpleWebRTC: https://github.com/andyet/SimpleWebRTC
 
+#### その他
+- メイン言語: JavaScript
+- サーバー: AWS
+
 ### 独自開発技術（Hack Dayで開発したもの）
 #### 2日間に開発した独自の機能・技術
 個人参加者の初対面チームなので、事前開発や研究背景などはありません。企画から実装まで全てHackDay中に行いました。
