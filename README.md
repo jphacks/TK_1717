@@ -1,6 +1,5 @@
-# サンプル（プロダクト名）
-
-[![Product Name](https://raw.github.com/GabLeRoux/WebMole/master/ressources/WebMole_Youtube_Video.png)](https://youtu.be/WWrXkgGdlis)
+# HouseMate
+デモ動画: https://youtu.be/WWrXkgGdlis
 
 ## 製品概要
 ### Lifestyle x Tech
