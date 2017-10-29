@@ -1,6 +1,7 @@
 # HouseMate
-デモ動画: https://youtu.be/WWrXkgGdlis
-デモサイト: https://jphacks.tk/
+- デモ動画: https://youtu.be/WWrXkgGdlis
+- デモサイト: https://jphacks.tk/
+- 発表スライド: https://goo.gl/NRU866
 
 ## 製品概要
 ### Lifestyle x Tech
