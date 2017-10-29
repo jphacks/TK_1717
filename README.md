@@ -1,5 +1,4 @@
 # HouseMate
-![](https://jphacks.tk/for_github/01.png)
 ![](https://jphacks.tk/for_github/02.png?time=1)
 ![](https://jphacks.tk/for_github/03.png)
 
