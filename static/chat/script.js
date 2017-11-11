@@ -1,71 +1,56 @@
-if (!localStorage.username) {
-    $('#go').on('click', function () {
-        if ($('#username').val()) {
-            localStorage.username = $('#username').val();
-            $('#splash').remove();
-        }
-    });
-} else {
-    $('#splash').remove();
+let webrtc, pkey, userName, userId;
+
+/**
+ * Server Requests
+ */
+const makeOptions = () => ({credentials: "same-origin", headers: {'Access-Control-Allow-Origin':'*'}});
+const fetchAuth = () => fetch('/auth', makeOptions()).then(it=>it.json());
+const fetchMessages = () => fetch(`/messages/${pkey}`, makeOptions()).then(it=>it.json());
+const postMessage = async message => {
+    const options = makeOptions();
+    options.method = 'POST';
+    options.headers['Content-Type'] = 'application/json';
+    options.body = JSON.stringify({message});
+    const response = await fetch(`/messages/${pkey}`, options).then(it=>it.json());
 }
 
-/********************************
- * URL Parsing
- ********************************/
-const parseSearch = search => {
-    const kv = {};
-    search.split(/[\?&]/g).map(q => {
-        if (q==="") return;
-        const i = q.indexOf("=");
-        const key = (i>=0) ? q.slice(0,i) : q;
-        const val = (i>=0) ? q.slice(i+1) : null;
-        kv[key] = val;
-    });
-    return kv;
+/**
+ * Chat View
+ */
+const addChat = message => {
+    const div = document.createElement('div');
+    div.classList.add('message');
+    div.innerHTML = `
+        <span class="name">${message.userName}</span>:
+        <span class="body">${message.body}</span>
+        <span class="time">${new Date(parseInt(message.createdAt)).toLocaleString().slice(-8)}</span>
+    `;
+    $('#messages').appendChild(div);
 }
 
-const search = parseSearch(decodeURI(location.search));
-console.log(search);
-
-if (search.pkey) {
-    $.get(`https://jphacks.tk/homes/api/realestate_article/${search.pkey}`).then(data => {
-        console.log(data.realestate_article_name)
-        $('h1').text(data.realestate_article_name)
-    });
-    $('#url').val(location.href);
-    $('body').addClass('active');
-} else {
-    $('h1').text('Oops, room or room name not found!');
-    throw new Error();
+const recvMessage = data => {
+    if (data.type !== "chat") return;
+    const message = data.payload;
+    addChat(message);
 }
 
-var room = search.pkey;
+const sendMessage = () => {
+    const body = $('#message').value;
+    const createdAt = (1*new Date()).toString();
+    const message = { pkey, userName, userId, createdAt, body };
+    $('#message').value = "";
+    addChat(message);
+    webrtc.sendToAll('chat', message);
+    postMessage(message);
+}
 
+/**
+ * WebRTC Videos
+ */
+const containerId = peer => `container_${webrtc.getDomId(peer)}`;
+const volumeId = peer => `volume_${peer.id}`;
 
-/********************************
- * Sample Programs
- ********************************/
-
-// create our webrtc connection
-var webrtc = new SimpleWebRTC({
-    // the id/element dom element that will hold "our" video
-    localVideoEl: 'localVideo',
-    // the id/element dom element that will hold remote videos
-    remoteVideosEl: '',
-    // immediately ask for camera access
-    autoRequestMedia: true,
-    debug: false,
-    detectSpeakingEvents: true
-});
-
-// when it's ready, join if we got a room from the URL
-webrtc.on('readyToCall', function () {
-    // you can name it anything
-    console.log(room);
-    if (room) webrtc.joinRoom(room);
-});
-
-function showVolume(el, volume) {
+const showVolume = (el, volume) => {
     if (!el) return;
     if (volume < -45) { // vary between -45 and -20
         el.style.height = '0px';
@@ -74,92 +59,89 @@ function showVolume(el, volume) {
     } else {
         el.style.height = '' + Math.floor((volume + 100) * 100 / 25 - 220) + '%';
     }
-}
-webrtc.on('channelMessage', function (peer, label, data) {
-    if (data.type == 'volume') {
-        showVolume(document.getElementById('volume_' + peer.id), data.volume);
-    }
-});
-webrtc.on('videoAdded', function (video, peer) {
-    console.log('video added', peer);
-    var remotes = document.getElementById('videos');
-    if (remotes) {
-        var d = document.createElement('div');
-        d.className = 'videoContainer';
-        d.id = 'container_' + webrtc.getDomId(peer);
-        d.appendChild(video);
-        var vol = document.createElement('div');
-        vol.id = 'volume_' + peer.id;
-        vol.className = 'volume_bar';
-        d.appendChild(vol);
-        remotes.appendChild(d);
-    }
-    $('.videoContainer').css('width',  `calc(100vw / ${$('.videoContainer').length} - 10px)`);
-    $('.videoContainer').css('height', `calc((100vw / ${$('.videoContainer').length} - 10px) * 2 / 3)`);
-});
-webrtc.on('videoRemoved', function (video, peer) {
-    console.log('video removed ', peer);
-    var remotes = document.getElementById('videos');
-    var el = document.getElementById('container_' + webrtc.getDomId(peer));
-    if (remotes && el) {
-        remotes.removeChild(el);
-    }
-    $('.videoContainer').css('width', `calc(100vw / ${$('.videoContainer').length})`);
-});
-webrtc.on('volumeChange', function (volume, treshold) {
-    //console.log('own volume', volume);
-    showVolume(document.getElementById('localVolume'), volume);
-});
-
-
-/********************************
- * Chat Programm
- ********************************/
-const addChat = ({time, name, message}) => {
-    const $elm = $('<div>');
-    $elm.addClass('message');
-    $elm.html(`<span class="name">${name}</span>: <span class="body">${message}</span><span class="time">${new Date(time).toLocaleString().slice(-8)}</span>`);
-    $('#messages').append($elm);
-}
-
-webrtc.connection.on('message', function (data) {
-    if (data.type === "chat") {
-        addChat(data.payload);
-    }
-});
-
-$('#sendMessage').on('click', function (event) {
-    const time = 1*new Date();
-    const name = localStorage.username;
-    const message = $('#message').val();
-    $('#message').val("");
-    const payload = {time, name, message};
-    addChat(payload);
-    webrtc.sendToAll('chat', payload);
-});
-
-const fetchMessages = async () => {
-    // const options = {};
-    // options.credentials = "same-origin";
-    // options.headers = {'Access-Control-Allow-Origin':'*'};
-    // const response = await fetch('/messages', options).then(it=>it.json());
-    // console.log(response);
 };
 
-const postMessage = async () => {
-    const message = {
-		id: 0,
-		pkey: req.params,
-		userId: req.user.id,
-		userName: req.user.displayName,
-		body: "hello world",
-		createdAt: 0 + new Date()
-    };
-    const options = {};
-    options.method = 'POST';
-    options.credentials = "same-origin";
-    options.headers = {'Access-Control-Allow-Origin':'*', 'Content-Type': 'application/json'};
-    options.body = {message};
-    const response = await fetch('/messages', options).then(it=>it.json());
-    console.log(response);
+const createVolume = (video, peer) => {
+    const div = document.createElement('div');
+    div.id = volumeId(peer);
+    div.classList.add('volume_bar');
+    return div;
+};
+
+const createVideoContainer = (video, peer) => {
+    const div = document.createElement('div');
+    div.classList.add('videoContainer');
+    div.id = containerId(peer);
+    div.appendChild(video);
+    div.appendChild(createVolume(video, peer));
+    return div;
+};
+
+const arrangeVideos = () => {
+    const videos = $$('.videoContainer');
+    videos.forEach(video => {
+        video.style.width  = `calc(100vw / ${videos.length} - 10px)`
+        video.style.height = `calc((100vw / ${videos.length} - 10px) * 2 / 3)`;
+    });
+};
+
+const initWebRTC = room => {
+    const webrtc = new SimpleWebRTC({
+        localVideoEl: $('#local.videoContainer video'),
+        remoteVideosEl: '',
+        autoRequestMedia: true,
+        debug: false,
+        detectSpeakingEvents: true
+    });
+    webrtc.on('readyToCall', () => webrtc.joinRoom(room));
+
+    webrtc.on('videoAdded',   (video, peer) => { $('#videos').appendChild(createVideoContainer(video, peer)); arrangeVideos(); });
+    webrtc.on('videoRemoved', (video, peer) => { $('#videos').removeChild($(`#${containerId(peer)}`)); arrangeVideos(); });
+
+    webrtc.on('channelMessage', (peer, label, data) => (data.type != 'volume') ? showVolume($(`#${volumeId(peer)}`), data.volume) : null);
+    webrtc.on('volumeChange', (volume, treshold) => showVolume($('#local.videoContainer .volume_bar'), volume));
+    return webrtc;
 }
+
+
+/**
+ * General Views
+ */
+const setView = async () => {
+    if (!pkey) {
+        $('h1').textContent = 'Oops, pkey not found!';
+        throw new Error();
+    }
+
+    $('body').classList.add('active');
+    $('#url').value = location.href;
+    if (location.origin === "jphacks.tk") {
+        const article = await jQUery.get(`https://jphacks.tk/homes/api/realestate_article/${pkey}`);
+        $('h1').textContent = article.realestate_article_name;
+    } else {
+        $('h1').textContent = "DEVELOPMENT";
+    }
+}
+
+
+/**
+ * Main
+ */
+void async function main () {
+    const auth = await fetchAuth();
+
+    userName = auth.userName;
+    userId = auth.userId;
+    pkey = parseSearch(decodeURI(location.search)).pkey;
+
+    webrtc = initWebRTC(pkey);
+
+    await setView();
+    await fetchMessages().then(({messages}) => messages.forEach(addChat));
+
+    $('#splash').remove();
+
+    webrtc.connection.on('message', recvMessage);
+    $('#sendMessage').on('click', sendMessage);
+}();
+

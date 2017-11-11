@@ -13,6 +13,10 @@ const messages = require('./server/messages');
 
 app.use(ensureLoggedIn, express.static('static'));
 app.use('/messages', messages);
+app.get('/auth', (req,res) => {
+	res.setHeader('Content-Type', 'application/json');
+	res.json({userId:req.user.id, userName:req.user.displayName});
+});
 
 const port = (process.argv.length > 2) ? process.argv[2] : 3000;
 app.listen(port, () => console.log('jphacks app listening on port:', port));
