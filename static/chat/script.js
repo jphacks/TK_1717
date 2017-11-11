@@ -138,11 +138,28 @@ $('#sendMessage').on('click', function (event) {
     webrtc.sendToAll('chat', payload);
 });
 
-void async function () {
+const fetchMessages = async () => {
     // const options = {};
     // options.credentials = "same-origin";
     // options.headers = {'Access-Control-Allow-Origin':'*'};
-    // const response = await fetch('/messages', options);
-    // const data = await response.json();
-    // console.log(data);
-}();
+    // const response = await fetch('/messages', options).then(it=>it.json());
+    // console.log(response);
+};
+
+const postMessage = async () => {
+    const message = {
+		id: 0,
+		pkey: req.params,
+		userId: req.user.id,
+		userName: req.user.displayName,
+		body: "hello world",
+		createdAt: 0 + new Date()
+    };
+    const options = {};
+    options.method = 'POST';
+    options.credentials = "same-origin";
+    options.headers = {'Access-Control-Allow-Origin':'*', 'Content-Type': 'application/json'};
+    options.body = {message};
+    const response = await fetch('/messages', options).then(it=>it.json());
+    console.log(response);
+}

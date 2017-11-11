@@ -25,6 +25,6 @@ module.exports = function (app) {
 		function(req, res) { res.redirect(req.session.returnTo || '/'); }
 	);
 
-	return require('connect-ensure-login').ensureLoggedIn('/login/facebook');
+	return passport;
 }
 
