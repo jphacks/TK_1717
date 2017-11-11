@@ -1,1 +1,3 @@
 for_github
+node_modules
+.env

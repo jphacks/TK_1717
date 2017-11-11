@@ -137,3 +137,12 @@ $('#sendMessage').on('click', function (event) {
     addChat(payload);
     webrtc.sendToAll('chat', payload);
 });
+
+void async function () {
+    // const options = {};
+    // options.credentials = "same-origin";
+    // options.headers = {'Access-Control-Allow-Origin':'*'};
+    // const response = await fetch('/messages', options);
+    // const data = await response.json();
+    // console.log(data);
+}();
