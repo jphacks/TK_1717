@@ -11,7 +11,6 @@
   </head>
   <body>
     <div id='mapBox'></div>
-	<div id="dragStatus"></div>
 	<style>
 		html,body {margin: 0; height:100%; width: 100%;}
 		body{font-size:14px;font-family:calibri;margin: 0;}
@@ -47,15 +46,6 @@
                   				map: map,
                   				icon: 'https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle_blue.png'
                 			});
-                			var imgString = `<div>`;
-                			/*
-                			console.log(currentHouse.photos.length);
-                			for (var imgIndex = 0;  imgIndex < currentHouse.photos.length; imgIndex++){
-                				console.log(imgIndex);
-                				//imgString += `<img src="${currentHouse.photos[imgIndex].mobile_url}" style="width:100%"onclick="plusDivs(1)"&#10095;>`;
-                				console.log(imgIndex);
-                			}*/
-                			imgString += '</div>';
 							var contentString = `
 							<p>
 							<img src="${currentHouse.photos[0].mobile_url || null}"><br>
@@ -64,6 +54,7 @@
 							<b>Floor Plan<b>: ${currentHouse.floor_plan_text || 'N/A'}<br>
 							<b>Floor Number<b>: ${currentHouse.floor_number || 'N/A'}<br>
 							<b>Price<b>: ${currentHouse.month_money_room_text || 'N/A'}<br>
+							<b>Nearest Station<b>: ${currentHouse.traffics[0].station_name || 'N/A'}<br>
 							<b>Chat Link<b>: <a href=https://jphacks.tk/chat?pkey=${currentHouse.pkey}>JOIN CHAT!</a><br>
 
 							</p>
@@ -189,7 +180,6 @@
 			drawHouseMarkers(map.getCenter());
 
 			google.maps.event.addListener(myMarker, 'dragend', function (evt) {
-			    document.getElementById('dragStatus').innerHTML = '<p> Current Lat: ' + evt.latLng.lat().toFixed(4) + ' Current Lng: ' + evt.latLng.lng().toFixed(4) + '</p>';
 			    var point = myMarker.getPosition();
 			     map.setCenter(point); // setCenter takes a LatLng object
 			     map.panTo(point);

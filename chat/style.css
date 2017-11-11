@@ -16,6 +16,7 @@ body {
 .message {
     height: 2em;
     line-height: 2em;
+    margin-bottom: 0.3em;
 }
 
 span.time {
