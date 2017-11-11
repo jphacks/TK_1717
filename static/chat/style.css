@@ -13,6 +13,27 @@ body {
     font-family: 'Dosis', sans-serif;
 }
 
+#members {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: calc(2em + 0.3em*2*2);
+    bottom: 0;
+    background-color: #f6e7cd;
+    font-family: 'Dosis', sans-serif;
+}
+
+#mypage-view {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: calc(2em + 0.3em*2*2);
+    bottom: 0;
+    background-color: #f6e7cd;
+    font-family: 'Dosis', sans-serif;
+}
+
+
 .message {
     height: 2em;
     line-height: 2em;
@@ -36,7 +57,7 @@ span.time {
     padding-bottom: 10px;
 }
 
-#pname {
+#header h1 {
     color: #e2d9de;
     height: 1em;
     padding: 0.3em;
@@ -45,6 +66,26 @@ span.time {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+#menu {
+    float: right;
+}
+
+#back,
+#mypage,
+#member,
+#star {
+    display: inline-block;
+    width: 1.2em;
+}
+
+#back a {
+    color: #e2d9de;
+}
+
+#star.on {
+    color: yellow;
 }
 
 #submit {

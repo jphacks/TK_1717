@@ -1,4 +1,5 @@
 let webrtc, pkey, userName, userId;
+let members = {};
 
 /**
  * Server Requests
@@ -13,6 +14,7 @@ const postMessage = async message => {
     options.body = JSON.stringify({message});
     const response = await fetch(`/messages/${pkey}`, options).then(it=>it.json());
 }
+const fetchMyLogs = () => fetch(`/messages`, makeOptions()).then(it=>it.json());
 
 /**
  * Chat View
@@ -31,17 +33,18 @@ const addChat = message => {
 const recvMessage = data => {
     if (data.type !== "chat") return;
     const message = data.payload;
+    members[message.userId] = message.userName;
     addChat(message);
 }
 
-const sendMessage = () => {
-    const body = $('#message').value;
+const sendMessage = body => {
     const createdAt = (1*new Date()).toString();
     const message = { pkey, userName, userId, createdAt, body };
     $('#message').value = "";
     addChat(message);
     webrtc.sendToAll('chat', message);
     postMessage(message);
+    $('#star').classList.add('on');
 }
 
 /**
@@ -116,10 +119,10 @@ const setView = async () => {
     $('body').classList.add('active');
     $('#url').value = location.href;
     if (location.origin === "jphacks.tk") {
-        const article = await jQUery.get(`https://jphacks.tk/homes/api/realestate_article/${pkey}`);
-        $('h1').textContent = article.realestate_article_name;
+        const article = await jQuery.get(`https://jphacks.tk/homes/api/realestate_article/${pkey}`);
+        $('#pname').textContent = article.realestate_article_name;
     } else {
-        $('h1').textContent = "DEVELOPMENT";
+        $('#pname').textContent = "DEVELOPMENT";
     }
 }
 
@@ -137,11 +140,82 @@ void async function main () {
     webrtc = initWebRTC(pkey);
 
     await setView();
-    await fetchMessages().then(({messages}) => messages.forEach(addChat));
+    const data = await fetchMessages();
+    data.messages.forEach(addChat);
+    if (data.messages.find(message => message.userId === userId)) {
+        $('#star').classList.add('on');
+    }
 
-    $('#splash').remove();
+    data.messages.forEach(({userId,userName}) => members[userId] = userName);
+
+    $('#star').on('click', function () {
+        if ($('#star:not(.on)')) sendMessage('興味あり！');
+    });
+
+    // $('#splash').remove();
 
     webrtc.connection.on('message', recvMessage);
-    $('#sendMessage').on('click', sendMessage);
+    $('#sendMessage').on('click', () => sendMessage($('#message').value));
+
+    const $members = $('#members');
+    const $membersList = $('#members-list');
+    $('#member').on('click', () => {
+        if ($members.style.display === "none") {
+            $members.style.display = "block";
+            $mypageView.style.display = "none";
+            while ($membersList.firstChild) $membersList.removeChild($membersList.firstChild);
+            Object.keys(members).map(_userId => {
+                const userName = members[_userId];
+                const div = document.createElement('div');
+                const label = document.createElement('label');
+                const span = document.createElement('span');
+                const input = document.createElement('input');
+                input.setAttribute('type', 'checkbox');
+                input.value = _userId;
+                input.classList.add('member');
+                span.textContent = userName;
+
+                if (userId === _userId) {
+                    input.disabled = true;
+                    input.checked = true;
+                }
+
+                label.appendChild(input);
+                label.appendChild(span);
+                div.appendChild(label);
+
+                $membersList.appendChild(div);
+            });
+        } else {
+            $members.style.display = "none";
+        }
+    });
+
+    $('#make-private').on('click', () => {
+        const group = $$('.member').filter(e => e.checked).map(e => e.value);
+        console.log(group);
+    });
+
+    const $mypageView = $('#mypage-view');
+    $('#mypage').on('click', () => {
+        if ($mypageView.style.display === "none") {
+            $mypageView.style.display = "block";
+            $members.style.display = "none";
+        } else {
+            $mypageView.style.display = "none";
+        }
+    });
+
+    const myLogs = await fetchMyLogs();
+    const getArticle = ({pkey}) => jQuery.get(`https://jphacks.tk/homes/api/realestate_article/${pkey}`);
+    const articles = await Promise.all(myLogs.pkeys.map(getArticle));
+    articles.forEach(article => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.textContent = article.realestate_article_name;
+        a.href = `/chat/?pkey=${article.pkey}`;
+        li.appendChild(a);
+        $('#interests').appendChild(li);
+    });
 }();
 

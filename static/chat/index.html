@@ -6,17 +6,38 @@
         <title>Find Your Share Mate</title>
         <link href="https://fonts.googleapis.com/css?family=Dosis" rel="stylesheet">
         <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
     </head>
     <body>
-        <div id="splash">
+        <!-- <div id="splash">
             <div>
                 <div>Enter Your Nickname:</div>
                 <input id="username" type="text" placeholder="nickname">
                 <button id="go">GO</button>
             </div>
+        </div> -->
+        <div id="members" style="display: none;">
+            <div id="members-list"></div>
+            <button id="make-private">このメンバーのプライベートチャンネルを作る</button>
+        </div>
+        <div id="mypage-view" style="display: none;">
+            <h2>プライベートチャンネル</h2>
+            <ul id="private-channels"></ul>
+            <h2>興味のある物件リスト</h2>
+            <ul id="interests"></ul>
         </div>
         <div id="header">
-            <h1 id="pname"></h1>
+            <h1>
+                <span id="menu">
+                    <span id="star"><i class="icon ion-android-star"></i></span>
+                    <span id="member"><i class="icon ion-android-people"></i></span>
+                    <span id="mypage"><i class="icon ion-android-person"></i></span>
+                    <span id="back"><a href="/"><i class="icon ion-search"></i></a></span>
+                </span>
+            </h1>
+            <h1>
+                <span id="pname"></span>
+            </h1>
             <input id="url" type="text"></div>
         </div>
         <div id="videos">
@@ -27,10 +48,10 @@
         </div>
         <div id="chat">
             <div id="messages"></div>
-            <div id="submit">
-                <input id="message" type="text" placeholder="message">
-                <button id="sendMessage">SEND</button>
-            </div>
+        </div>
+        <div id="submit">
+            <input id="message" type="text" placeholder="message">
+            <button id="sendMessage"><i class="icon ion-android-send"></i></button>
         </div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
