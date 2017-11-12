@@ -57,6 +57,16 @@ span.time {
     padding-bottom: 10px;
 }
 
+#header {
+    position: fixed;
+    width: 100%;
+    top: 0;
+}
+
+#videos {
+    margin-top: 7em;
+}
+
 #header h1 {
     color: #e2d9de;
     height: 1em;
@@ -70,6 +80,10 @@ span.time {
 
 #menu {
     float: right;
+}
+
+#messages {
+    margin-bottom: 4em;
 }
 
 #back,
@@ -89,7 +103,7 @@ span.time {
 }
 
 #submit {
-    position: absolute;
+    position: fixed;
     width: 100%;
     bottom: -1px;
 }

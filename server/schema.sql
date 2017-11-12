@@ -13,22 +13,22 @@ CREATE TABLE message (
 	createdAt TEXT
 );
 
--- CREATE TABLE channel {
--- 	id INTEGER PRIMARY KEY,
--- 	pkey TEXT,
--- }
+CREATE TABLE channel {
+	id TEXT PRIMARY KEY,
+	pkey TEXT,
+}
 
--- CREATE TABLE channel_message (
--- 	id INTEGER PRIMARY KEY,
--- 	channelId INTEGER,
--- 	userId TEXT,
--- 	userName TEXT,
--- 	body TEXT,
--- 	createdAt TEXT
--- );
+CREATE TABLE channelMessage (
+	id INTEGER PRIMARY KEY,
+	channelId TEXT,
+	userId TEXT,
+	userName TEXT,
+	body TEXT,
+	createdAt TEXT
+);
 
--- CREATE TABLE channel_user {
--- 	channelId TEXT,
--- 	userId TEXT,
--- 	userName TEXT
--- }
+CREATE TABLE channelUser {
+	channelId TEXT,
+	userId TEXT,
+	userName TEXT
+}
